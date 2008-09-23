@@ -50,7 +50,7 @@ public class AccessFactoryImpl implements AccessFactory {
 
 	/**
 	 * A template method that calls {@link #createObject()} and
-	 * {@link #fillAccess(Access, HttpServletRequest)}.
+	 * {@link #fill(Access, HttpServletRequest)}.
 	 * 
 	 * @see br.com.arsmachina.accesslogger.services.AccessFactory#create(javax.servlet.http.HttpServletRequest)
 	 * @return an {@link Access} object.
@@ -59,7 +59,7 @@ public class AccessFactoryImpl implements AccessFactory {
 
 		Access access = createObject();
 		
-		fillAccess(access, request);
+		fill(access, request);
 
 		return access;
 
@@ -70,7 +70,7 @@ public class AccessFactoryImpl implements AccessFactory {
 	 * @param access an {@link Access}.
 	 * @param request a {@link HttpServletRequest}.
 	 */
-	protected void fillAccess(Access access, HttpServletRequest request) {
+	protected void fill(Access access, HttpServletRequest request) {
 
 		User user = loggedUser(request);
 
@@ -78,6 +78,8 @@ public class AccessFactoryImpl implements AccessFactory {
 		access.setContextPath(request.getContextPath());
 		access.setIp(request.getRemoteAddr());
 		access.setUserAgent(request.getHeader("User-Agent"));
+		access.setRemoteHost(request.getRemoteHost());
+		setLocale(access, request);
 		access.setQueryString(request.getQueryString());
 
 		setReferrer(request, access);
@@ -89,6 +91,22 @@ public class AccessFactoryImpl implements AccessFactory {
 		if (session != null && request.isRequestedSessionIdValid()) {
 			access.setSessionId(session.getId());
 		}
+		
+	}
+
+	/**
+	 * @param access
+	 * @param request
+	 */
+	private void setLocale(Access access, HttpServletRequest request) {
+		
+		String acceptLanguage = request.getHeader("Accept-Language");
+		
+		if (acceptLanguage != null && acceptLanguage.indexOf(';') >= 0) {
+			acceptLanguage = acceptLanguage.substring(0, acceptLanguage.indexOf(';'));
+		}
+		
+		access.setLocale(acceptLanguage);
 		
 	}
 

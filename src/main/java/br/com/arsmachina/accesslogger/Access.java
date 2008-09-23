@@ -43,6 +43,10 @@ public class Access {
 
 	private String ip;
 
+	private String remoteHost;
+
+	private String locale;
+
 	private String url;
 
 	private String userAgent;
@@ -255,6 +259,42 @@ public class Access {
 	 */
 	public void setUserAgent(String userAgent) {
 		this.userAgent = userAgent;
+	}
+
+	/**
+	 * Returns the value of the <code>remoteAddress</code> property.
+	 * 
+	 * @return a {@link String}.
+	 */
+	public String getRemoteHost() {
+		return remoteHost;
+	}
+
+	/**
+	 * Changes the value of the <code>remoteHost</code> property.
+	 * 
+	 * @param remoteHost a {@link String}.
+	 */
+	public void setRemoteHost(String remoteHost) {
+		this.remoteHost = remoteHost;
+	}
+
+	/**
+	 * Returns the value of the <code>locale</code> property.
+	 * 
+	 * @return a {@link String}.
+	 */
+	public String getLocale() {
+		return locale;
+	}
+
+	/**
+	 * Changes the value of the <code>locale</code> property.
+	 * 
+	 * @param locale a {@link String}.
+	 */
+	public void setLocale(String locale) {
+		this.locale = locale;
 	}
 
 }

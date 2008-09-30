@@ -28,7 +28,7 @@ import br.com.arsmachina.accesslogger.services.AccessLoggerHub;
 /**
  * Default {@link AccessLoggerHub} implementation.
  * 
- * @author Thiago H. de Paula Figueiredo (ThiagoHP)
+ * @author Thiago H. de Paula Figueiredo
  */
 public class AccessLoggerHubImpl implements AccessLoggerHub {
 

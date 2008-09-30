@@ -20,7 +20,7 @@ import br.com.arsmachina.accesslogger.services.AccessFilterRule;
  * {@link AccessFilterRule} that accepts requests which ends with a given string
  * and ignores the others.
  * 
- * @author Thiago H. de Paula Figueiredo (ThiagoHP)
+ * @author Thiago H. de Paula Figueiredo
  */
 public class URLEndingAccessFilterRule implements AccessFilterRule {
 

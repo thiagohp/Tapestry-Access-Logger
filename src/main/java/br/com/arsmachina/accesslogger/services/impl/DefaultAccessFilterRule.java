@@ -21,7 +21,7 @@ import br.com.arsmachina.accesslogger.services.AccessFilterRule;
  * Default {@link AccessFilterRule} implementation, being the last one to be used by
  * {@link AccessFilter}.
  * 
- * @author Thiago H. de Paula Figueiredo (ThiagoHP)
+ * @author Thiago H. de Paula Figueiredo
  */
 public class DefaultAccessFilterRule implements AccessFilterRule {
 

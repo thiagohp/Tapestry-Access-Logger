@@ -22,7 +22,7 @@ import br.com.arsmachina.accesslogger.AccessLogger;
 /**
  * Interface that aggregates {@link AccessLogger}s.
  * 
- * @author Thiago H. de Paula Figueiredo (ThiagoHP)
+ * @author Thiago H. de Paula Figueiredo
  */
 public interface AccessLoggerHub {
 

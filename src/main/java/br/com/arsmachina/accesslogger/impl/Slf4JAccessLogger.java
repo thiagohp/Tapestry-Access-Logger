@@ -24,7 +24,7 @@ import br.com.arsmachina.authentication.entity.User;
 /**
  * {@link AccessLogger} implementation using log4j.
  * 
- * @author Thiago H. de Paula Figueiredo (ThiagoHP)
+ * @author Thiago H. de Paula Figueiredo
  */
 public class Slf4JAccessLogger implements AccessLogger {
 

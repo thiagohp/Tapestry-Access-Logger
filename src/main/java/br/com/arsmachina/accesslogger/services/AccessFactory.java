@@ -21,7 +21,7 @@ import br.com.arsmachina.accesslogger.Access;
 /**
  * A factory of {@link Access} objects.
  * 
- * @author Thiago H. de Paula Figueiredo (ThiagoHP)
+ * @author Thiago H. de Paula Figueiredo
  */
 public interface AccessFactory {
 

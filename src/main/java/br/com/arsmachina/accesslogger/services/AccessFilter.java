@@ -17,7 +17,7 @@ package br.com.arsmachina.accesslogger.services;
 /**
  * Interface that defines if a request to a given path must be logged or not.
  * 
- * @author Thiago H. de Paula Figueiredo (ThiagoHP)
+ * @author Thiago H. de Paula Figueiredo
  */
 public interface AccessFilter {
 

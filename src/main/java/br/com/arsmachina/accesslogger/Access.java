@@ -21,7 +21,7 @@ import br.com.arsmachina.authentication.entity.User;
 /**
  * Class that represents an user access (visit).
  * 
- * @author Thiago H. de Paula Figueiredo (ThiagoHP)
+ * @author Thiago H. de Paula Figueiredo
  */
 public class Access {
 

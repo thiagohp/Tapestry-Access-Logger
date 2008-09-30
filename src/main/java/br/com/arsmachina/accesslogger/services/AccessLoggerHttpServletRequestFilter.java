@@ -26,7 +26,7 @@ import org.apache.tapestry5.services.HttpServletRequestHandler;
 /**
  * Tapestry 5 request filter that listens to the page accesses (visits).
  * 
- * @author Thiago H. de Paula Figueiredo (ThiagoHP)
+ * @author Thiago H. de Paula Figueiredo
  */
 public class AccessLoggerHttpServletRequestFilter implements HttpServletRequestFilter {
 

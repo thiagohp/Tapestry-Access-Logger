@@ -20,7 +20,7 @@ import br.com.arsmachina.accesslogger.AccessLogger;
 /**
  * {@link AccessLogger} implementation that simply prints all access to the standard output.
  * 
- * @author Thiago H. de Paula Figueiredo (ThiagoHP)
+ * @author Thiago H. de Paula Figueiredo
  */
 public class StandardOutAccessLogger implements AccessLogger {
 

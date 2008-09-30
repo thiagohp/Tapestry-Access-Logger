@@ -18,7 +18,7 @@ package br.com.arsmachina.accesslogger;
 /**
  * Interface that receives user access (visit) notifications.
  * 
- * @author Thiago H. de Paula Figueiredo (ThiagoHP)
+ * @author Thiago H. de Paula Figueiredo
  */
 public interface AccessLogger {
 

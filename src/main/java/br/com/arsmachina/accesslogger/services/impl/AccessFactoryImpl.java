@@ -27,7 +27,7 @@ import br.com.arsmachina.authentication.entity.User;
 /**
  * Default {@link AccessFactory} implementation.
  * 
- * @author Thiago H. de Paula Figueiredo (ThiagoHP)
+ * @author Thiago H. de Paula Figueiredo
  */
 public class AccessFactoryImpl implements AccessFactory {
 

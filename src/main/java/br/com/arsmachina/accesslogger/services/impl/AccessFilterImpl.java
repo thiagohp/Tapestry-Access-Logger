@@ -22,7 +22,7 @@ import br.com.arsmachina.accesslogger.services.AccessFilterRule;
 /**
  * Default {@link AccessFilter} implementation.
  * 
- * @author Thiago H. de Paula Figueiredo (ThiagoHP)
+ * @author Thiago H. de Paula Figueiredo
  */
 public class AccessFilterImpl implements AccessFilter {
 

@@ -27,7 +27,7 @@ import br.com.arsmachina.accesslogger.services.AccessFilterRule;
 /**
  * Test class for {@link AccessFilterImpl}.
  * 
- * @author Thiago H. de Paula Figueiredo (ThiagoHP)
+ * @author Thiago H. de Paula Figueiredo
  */
 public class AccessFilterImplTest {
 

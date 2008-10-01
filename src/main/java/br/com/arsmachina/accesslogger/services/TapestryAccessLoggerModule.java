@@ -89,14 +89,14 @@ public class TapestryAccessLoggerModule {
 	}
 
 	/**
-	 * * Contributes the {@link AccessLoggerHttpServletRequestFilter} to the {@link RequestHandler}
+	 * Contributes the {@link AccessLoggerHttpServletRequestFilter} to the {@link RequestHandler}
 	 * service.
 	 */
 	public void contributeHttpServletRequestHandler(
 			OrderedConfiguration<HttpServletRequestFilter> configuration,
 			AccessLoggerHttpServletRequestFilter filter) {
 
-		configuration.add("logger", filter, "after:*");
+		configuration.add("logger", filter, "before:*");
 
 	}
 

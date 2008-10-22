@@ -9,12 +9,12 @@
 	<description>
 		A package that provides easy user access logging to Tapestry 5 applications.
 	</description>
-	<version>0.9</version>
+	<version>1.0</version>
 	<url>http://www.arsmachina.com.br/project/tapestryaccesslogger</url>
 	<parent>
 		<groupId>br.com.arsmachina</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.9</version>
+		<version>1.0</version>
 		<relativePath>../parent/pom.xml</relativePath>
 	</parent>
 	<dependencies>

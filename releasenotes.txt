@@ -1,0 +1,5 @@
+1.0
+* Changed parent project dependency from 0.9 to 1.0.
+
+0.9
+* Initial version

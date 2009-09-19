@@ -1,4 +1,4 @@
-// Copyright 2008 Thiago H. de Paula Figueiredo
+// Copyright 2008-2009 Thiago H. de Paula Figueiredo
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,11 @@ package br.com.arsmachina.accesslogger.services.impl;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.tapestry5.services.ComponentClassResolver;
+import org.apache.tapestry5.EventContext;
+import org.apache.tapestry5.services.ApplicationStateManager;
+import org.apache.tapestry5.services.ComponentEventLinkEncoder;
+import org.apache.tapestry5.services.PageRenderRequestParameters;
+import org.apache.tapestry5.services.Request;
 
 import br.com.arsmachina.accesslogger.Access;
 import br.com.arsmachina.accesslogger.services.AccessFactory;
@@ -31,35 +35,60 @@ import br.com.arsmachina.authentication.entity.User;
  */
 public class AccessFactoryImpl implements AccessFactory {
 
-	private ComponentClassResolver componentClassResolver;
+//	final private Request request;
+
+	final private HttpServletRequest httpServletRequest;
+
+	final private ComponentEventLinkEncoder componentEventLinkEncoder;
+
+	final private ApplicationStateManager applicationStateManager;
 
 	/**
 	 * Single constructor of this class.
-	 * 
-	 * @param componentClassResolver a {@link ComponentClassResolver}. It cannot be null.
+	 *
+	 * @param request a {@link Request}. It cannot be null.
+	 * @param httpServletRequest an {@link HttpServletRequest}. It cannot be null.
+	 * @param componentEventLinkEncoder a {@link ComponentEventLinkEncoder}. It cannot be null.
+	 * @param applicationStateManager an {@link ApplicationStateManager}. It cannot be null.
 	 */
-	public AccessFactoryImpl(ComponentClassResolver componentClassResolver) {
+	public AccessFactoryImpl(Request request, HttpServletRequest httpServletRequest,
+			ComponentEventLinkEncoder componentEventLinkEncoder,
+			ApplicationStateManager applicationStateManager) {
 
-		if (componentClassResolver == null) {
-			throw new IllegalArgumentException("Parameter componentClassResolver cannot be null");
+		if (request == null) {
+			throw new IllegalArgumentException("Parameter request cannot be null.");
 		}
 
-		this.componentClassResolver = componentClassResolver;
+		if (httpServletRequest == null) {
+			throw new IllegalArgumentException("Parameter httpServletRequest cannot be null.");
+		}
+
+		if (componentEventLinkEncoder == null) {
+			throw new IllegalArgumentException("Parameter componentEventLinkEncoder cannot be null");
+		}
+
+		if (applicationStateManager == null) {
+			throw new IllegalArgumentException("Parameter applicationStateManager cannot be null.");
+		}
+
+		this.componentEventLinkEncoder = componentEventLinkEncoder;
+//		this.request = request;
+		this.httpServletRequest = httpServletRequest;
+		this.applicationStateManager = applicationStateManager;
 
 	}
 
 	/**
-	 * A template method that calls {@link #createObject()} and
-	 * {@link #fill(Access, HttpServletRequest)}.
+	 * A template method that calls {@link #createObject()} and {@link #fill(Access)}.
 	 * 
-	 * @see br.com.arsmachina.accesslogger.services.AccessFactory#create(javax.servlet.http.HttpServletRequest)
+	 * @see br.com.arsmachina.accesslogger.services.AccessFactory#create()
 	 * @return an {@link Access} object.
 	 */
-	final public Access create(HttpServletRequest request) {
+	final public Access create() {
 
 		Access access = createObject();
-		
-		fill(access, request);
+
+		fill(access);
 
 		return access;
 
@@ -67,57 +96,43 @@ public class AccessFactoryImpl implements AccessFactory {
 
 	/**
 	 * Fills the newly-created {@link Access} instance.
+	 * 
 	 * @param access an {@link Access}.
-	 * @param request a {@link HttpServletRequest}.
 	 */
-	protected void fill(Access access, HttpServletRequest request) {
+	protected void fill(Access access) {
 
-		User user = loggedUser(request);
+		User user = applicationStateManager.getIfExists(User.class);
 
 		access.setUser(user);
-		access.setContextPath(request.getContextPath());
-		access.setIp(request.getRemoteAddr());
-		access.setUserAgent(request.getHeader("User-Agent"));
-		access.setRemoteHost(request.getRemoteHost());
-		setLocale(access, request);
-		access.setQueryString(request.getQueryString());
+		access.setContextPath(httpServletRequest.getContextPath());
+		access.setIp(httpServletRequest.getRemoteAddr());
+		access.setUserAgent(httpServletRequest.getHeader("User-Agent"));
+		access.setRemoteHost(httpServletRequest.getRemoteHost());
+		setLocale(access);
+		access.setQueryString(httpServletRequest.getQueryString());
 
-		setReferrer(request, access);
-		setPageAndActivationContext(access, request);
-		setUrl(request, access);
+		setReferrer(access);
+		setPageAndActivationContext(access);
+		setUrl(access);
 
-		HttpSession session = request.getSession(false);
+		HttpSession session = httpServletRequest.getSession(false);
 
-		if (session != null && request.isRequestedSessionIdValid()) {
+		if (session != null && httpServletRequest.isRequestedSessionIdValid()) {
 			access.setSessionId(session.getId());
 		}
-		
+
 	}
 
-	/**
-	 * @param access
-	 * @param request
-	 */
-	private void setLocale(Access access, HttpServletRequest request) {
-		
-		String acceptLanguage = request.getHeader("Accept-Language");
-		
+	private void setLocale(Access access) {
+
+		String acceptLanguage = httpServletRequest.getHeader("Accept-Language");
+
 		if (acceptLanguage != null && acceptLanguage.indexOf(';') >= 0) {
 			acceptLanguage = acceptLanguage.substring(0, acceptLanguage.indexOf(';'));
 		}
-		
-		access.setLocale(acceptLanguage);
-		
-	}
 
-	/**
-	 * Method used by {@link #create(HttpServletRequest)} to get the logged user.
-	 * 
-	 * @param request a {@link HttpServletRequest}.
-	 * @return an {@link User} or <code>null</code>.
-	 */
-	protected User loggedUser(HttpServletRequest request) {
-		return (User) request.getAttribute(AccessLoggerRequestFilter.LOGGED_USER_REQUEST_ATTRIBUTE);
+		access.setLocale(acceptLanguage);
+
 	}
 
 	/**
@@ -129,11 +144,7 @@ public class AccessFactoryImpl implements AccessFactory {
 		return new Access();
 	}
 
-	/**
-	 * @param httpServletRequest
-	 * @param access
-	 */
-	private void setReferrer(HttpServletRequest httpServletRequest, Access access) {
+	private void setReferrer(Access access) {
 
 		String referer = httpServletRequest.getHeader("Referer");
 
@@ -145,30 +156,21 @@ public class AccessFactoryImpl implements AccessFactory {
 
 	}
 
-	/**
-	 * @param referer
-	 * @return
-	 */
-	private String removeJsessionid(String referer) {
-		int index = referer.indexOf(";jsessionid=");
+	private String removeJsessionid(String url) {
+		int index = url.indexOf(";jsessionid=");
 		if (index >= 0) {
-			referer = referer.substring(0, index);
+			url = url.substring(0, index);
 		}
-		return referer;
+		return url;
 	}
 
-	/**
-	 * @param request
-	 * @param httpServletRequest
-	 * @param access
-	 */
-	private void setUrl(HttpServletRequest request, Access access) {
+	private void setUrl(Access access) {
 		StringBuilder url = new StringBuilder();
 
 		int port = -1;
-		int requestPort = request.getLocalPort();
+		int requestPort = httpServletRequest.getLocalPort();
 
-		if (request.isSecure()) {
+		if (getOriginalRequest().isSecure()) {
 
 			url.append("https");
 
@@ -187,7 +189,7 @@ public class AccessFactoryImpl implements AccessFactory {
 
 		}
 		url.append("://");
-		url.append(request.getServerName());
+		url.append(httpServletRequest.getServerName());
 
 		if (port != -1) {
 			url.append(":");
@@ -195,9 +197,9 @@ public class AccessFactoryImpl implements AccessFactory {
 		}
 
 		url.append(access.getContextPath());
-		url.append(request.getServletPath());
+		url.append(httpServletRequest.getServletPath());
 
-		String queryString = request.getQueryString();
+		String queryString = httpServletRequest.getQueryString();
 		if (queryString != null) {
 			url.append("?");
 			url.append(queryString);
@@ -213,65 +215,41 @@ public class AccessFactoryImpl implements AccessFactory {
 	 * @param access an {@link Access}. It cannot be null.
 	 * @param request a {@link HttpServletRequest}. It cannot be null.
 	 */
-	void setPageAndActivationContext(Access access, HttpServletRequest request) {
+	void setPageAndActivationContext(Access access) {
 
 		assert access != null;
-		assert request != null;
+		assert httpServletRequest != null;
 
-		// copied from RequestImpl.getPath()
+		Request originalRequest = getOriginalRequest();
+		PageRenderRequestParameters prrr = componentEventLinkEncoder.decodePageRenderRequest(originalRequest);
+		
+		if (prrr != null) {
+			
+			access.setPage(prrr.getLogicalPageName());
+			EventContext activationContext = prrr.getActivationContext();
+			int count = activationContext.getCount();
+			
+			if (count > 0) {
 
-		String path = request.getPathInfo();
-
-		if (path == null) {
-			path = request.getServletPath();
-		}
-
-		// Websphere 6.1 is a bit wonky (see TAPESTRY-1713), and tends to return the empty string
-		// for the servlet path, and return the true path in pathInfo.
-
-		path = path.length() == 0 ? "/" : path;
-		path = path.trim();
-
-		if (path.equals("/")) {
-			access.setPage(path);
-			access.setActivationContext(null);
-		}
-		else {
-
-			String extendedName = path.length() == 0 ? path : path.substring(1);
-
-			// Copied and adapted from Tapestry's PageRenderDispatcher
-
-			// Ignore trailing slashes in the path.
-			while (extendedName.endsWith("/")) {
-				extendedName = extendedName.substring(0, extendedName.length() - 1);
-			}
-
-			int slashx = extendedName.length();
-			boolean atEnd = true;
-
-			while (slashx > 0) {
-
-				String pageName = extendedName.substring(0, slashx);
-				String pageActivationContext = atEnd ? "" : extendedName.substring(slashx + 1);
-
-				if (componentClassResolver.isPageName(pageName)) {
-
-					access.setPage("/" + pageName);
-					access.setActivationContext(pageActivationContext);
-					break;
-
+				StringBuilder builder = new StringBuilder();
+				
+				for (int i = 0; i < count - 1; i++) {
+					builder.append(activationContext.get(String.class, i));
+					builder.append('/');
 				}
-
-				// Work backwards, splitting at the next slash.
-				slashx = extendedName.lastIndexOf('/', slashx - 1);
-
-				atEnd = false;
-
+				
+				builder.append(activationContext.get(String.class, count - 1));
+				
+				access.setActivationContext(builder.toString());
+				
 			}
-
+			
 		}
 
+	}
+	
+	protected Request getOriginalRequest() {
+		return (Request) httpServletRequest.getAttribute(AccessLoggerRequestFilter.ORIGINAL_REQUEST_ATTRIBUTE);
 	}
 
 }

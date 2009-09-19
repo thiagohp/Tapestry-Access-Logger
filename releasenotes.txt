@@ -1,5 +1,7 @@
 1.1
 * Changed parent project dependency from 1.0 to 1.1.
+* Updated to use Tapestry 5.0.1.5 and its new ComponentEventLinkEncoder service.
+* Mildly major rewrite, not backward-compatible.
 
 1.0
 * Changed parent project dependency from 0.9 to 1.0.

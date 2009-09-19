@@ -1,4 +1,4 @@
-// Copyright 2008 Thiago H. de Paula Figueiredo
+// Copyright 2008-2009 Thiago H. de Paula Figueiredo
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,11 +32,13 @@ import br.com.arsmachina.accesslogger.services.AccessLoggerHub;
  */
 public class AccessLoggerHubImpl implements AccessLoggerHub {
 
-	private List<AccessLogger> loggers;
+	final private List<AccessLogger> loggers;
 
-	private AccessFactory accessFactory;
+	final private AccessFactory accessFactory;
 
-	private AccessFilter accessFilter;
+	final private AccessFilter accessFilter;
+	
+	final private HttpServletRequest request;
 
 	/**
 	 * Single constructor.
@@ -60,42 +62,36 @@ public class AccessLoggerHubImpl implements AccessLoggerHub {
 		if (accessFilter == null) {
 			throw new IllegalArgumentException("Parameter accessFilter cannot be null");
 		}
+		
+		if (request == null) {
+			throw new IllegalArgumentException("Parameter request cannot be null.");
+		}
 
 		this.loggers = Collections.unmodifiableList(loggers);
 		this.accessFactory = accessFactory;
 		this.accessFilter = accessFilter;
+		this.request = request;
 
 	}
 
-	/**
-	 * @see br.com.arsmachina.accesslogger.services.AccessLoggerHub#getAccessLoggers()
-	 */
 	public List<AccessLogger> getAccessLoggers() {
 		return loggers;
 	}
 
-	/**
-	 * @see br.com.arsmachina.accesslogger.services.AccessLoggerHub#notifyAccess(HttpServletRequest)
-	 */
-	public void notifyAccess(HttpServletRequest request) {
+	public void notifyAccess() {
 
-		// copied from RequestImpl.getPath
-		
         String path = request.getPathInfo();
 
         if (path == null) {
         	path = request.getServletPath();
         }
 
-        // Websphere 6.1 is a bit wonky (see TAPESTRY-1713), and tends to return the empty string
-        // for the servlet path, and return the true path in pathInfo.
-
         path = path.length() == 0 ? "/" : path;
 		path = path.trim();
 
 		if (accessFilter.accept(path)) {
 
-			Access access = accessFactory.create(request);
+			Access access = accessFactory.create();
 
 			for (AccessLogger logger : loggers) {
 				logger.log(access);

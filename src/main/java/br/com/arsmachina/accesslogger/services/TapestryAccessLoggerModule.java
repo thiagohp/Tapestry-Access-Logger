@@ -1,4 +1,4 @@
-// Copyright 2008 Thiago H. de Paula Figueiredo
+// Copyright 2008-2009 Thiago H. de Paula Figueiredo
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.tapestry5.ioc.OrderedConfiguration;
 import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.services.ChainBuilder;
-import org.apache.tapestry5.services.HttpServletRequestFilter;
 import org.apache.tapestry5.services.RequestFilter;
 import org.apache.tapestry5.services.RequestHandler;
 
@@ -44,9 +43,8 @@ public class TapestryAccessLoggerModule {
 	 * @param binder
 	 */
 	public static void bind(ServiceBinder binder) {
-		binder.bind(AccessLoggerRequestFilter.class);
 		binder.bind(Slf4JAccessLogger.class);
-		binder.bind(AccessLoggerHttpServletRequestFilter.class);
+		binder.bind(AccessLoggerRequestFilter.class);
 		binder.bind(AccessFactory.class, AccessFactoryImpl.class);
 	}
 
@@ -76,27 +74,16 @@ public class TapestryAccessLoggerModule {
 	}
 
 	/**
-	 * Contributes the {@link AccessLoggerRequestFilter} to the {@link RequestHandler} service.
+	 * Contributes the {@link AccessLoggerRequestFilter} to the {@link RequestHandler}
+	 * service.
 	 * 
-	 * @param configuration
+	 * @param configuration an {@link OrderedConfiguration}.
 	 * @param filter an {@link AccessLoggerRequestFilter}.
 	 */
-	public static void contributeRequestHandler(OrderedConfiguration<RequestFilter> configuration,
-			AccessLoggerRequestFilter filter) {
+	 public void contributeRequestHandler(OrderedConfiguration<RequestFilter> configuration, 
+			 AccessLoggerRequestFilter filter) {
 
-		configuration.add("accessLogger", filter, "after:*");
-
-	}
-
-	/**
-	 * Contributes the {@link AccessLoggerHttpServletRequestFilter} to the {@link RequestHandler}
-	 * service.
-	 */
-	public void contributeHttpServletRequestHandler(
-			OrderedConfiguration<HttpServletRequestFilter> configuration,
-			AccessLoggerHttpServletRequestFilter filter) {
-
-		configuration.add("logger", filter, "before:*");
+		configuration.add("logger", filter, "before:URLRewriter");
 
 	}
 

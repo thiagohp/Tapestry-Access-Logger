@@ -1,4 +1,4 @@
-// Copyright 2008 Thiago H. de Paula Figueiredo
+// Copyright 2008-2009 Thiago H. de Paula Figueiredo
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,8 +14,6 @@
 
 package br.com.arsmachina.accesslogger.services;
 
-import javax.servlet.http.HttpServletRequest;
-
 import br.com.arsmachina.accesslogger.Access;
 
 /**
@@ -28,9 +26,8 @@ public interface AccessFactory {
 	/**
 	 * Creates an {@link Access}.
 	 * 
-	 * @param request a {@link HttpServletRequest}. It cannot be null.
 	 * @return an {@link Access}.
 	 */
-	Access create(HttpServletRequest request);
+	Access create();
 
 }
